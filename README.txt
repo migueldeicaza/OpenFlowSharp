@@ -5,7 +5,7 @@ Alex Fajkowski and was originally published here:
      http://github.com/thefaj/OpenFlow
 
 The code is released under the same terms as the original
-implementation, it looks like BSD or MIT X11.
+implementation, MIT X11.
 
 All kudos should go to him, and all bugs in this implementation are 
 probably my fault - Miguel.
