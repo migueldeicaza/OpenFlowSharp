@@ -39,6 +39,8 @@ namespace Sample
 		#region IOpenFlowDataSource implementation
 		void IOpenFlowDataSource.RequestImage (OpenFlowView view, int index)
 		{
+			// This is only used for providing data on demand, instead 
+			// of preloading all the data
 			throw new NotImplementedException ();
 		}
 		

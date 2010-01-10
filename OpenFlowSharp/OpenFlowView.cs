@@ -28,6 +28,7 @@ using MonoTouch.UIKit;
 using MonoTouch.CoreAnimation;
 using System.Drawing;
 using MonoTouch.CoreGraphics;
+using System.Threading;
 
 namespace OpenFlowSharp
 {
@@ -129,6 +130,21 @@ namespace OpenFlowSharp
 			
 			this.dataSource = dataSource;
 			SetupInitialState ();
+			
+#if AUTOMATIC_DEMO
+			Thread t = new Thread (delegate (object a) {
+				for (int i = 1; i < 10; i++){
+					Thread.Sleep (2000);
+					InvokeOnMainThread (delegate {
+						SetSelectedCover (i);
+						Console.WriteLine ("Set cover: {0}", i);
+						CenterOnSelectedCover (true);
+					});
+				}
+			});
+			
+			t.Start ();
+#endif
 		}
 		
 		public override void AwakeFromNib ()
@@ -241,7 +257,7 @@ namespace OpenFlowSharp
 		
 		void LayoutCovers (int selected, int from, int to)
 		{
-			for (int i = from; i < to; i++){
+			for (int i = from; i <= to; i++){
 				ItemView cover;
 				
 				if (onscreenCovers.TryGetValue (i, out cover))
@@ -329,6 +345,7 @@ namespace OpenFlowSharp
 				lowerVisibleCover = newLowerBound;
 				upperVisibleCover = newUpperBound;
 				selectedCoverView = onscreenCovers [newSelectedCover];
+				LayoutCovers (newSelectedCover, newLowerBound, newUpperBound);
 				return;
 			} else if (newSelectedCover > selectedCoverView.Number){
 				for (int i = lowerVisibleCover; i < newLowerBound; i++){
@@ -401,6 +418,15 @@ namespace OpenFlowSharp
 		{
 			var selectedOffset = new PointF ((float) coverSpacing * selectedCoverView.Number, 0);
 			scrollView.SetContentOffset (selectedOffset, animated);
+		}
+		
+		public int Selected { 
+			get {
+				if (selectedCoverView == null)
+					return -1;
+				
+				return selectedCoverView.Number;
+			}
 		}
 		
 		public UIImage this [int idx] {
