@@ -10,6 +10,11 @@ implementation, MIT X11.
 All kudos should go to him, and all bugs in this implementation are 
 probably my fault - Miguel.
 
+There is a patch included to make Flickr.NET build with MonoTouch, as
+well as a ready-to-run DLL compiled like this:
+
+	smcs -target:library -out:flickrnet.dll *.cs
+
 What follows is Alex Fajkowski's original README file
 
 -----
