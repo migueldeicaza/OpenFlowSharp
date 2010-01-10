@@ -2,31 +2,25 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|iPhoneSimulator" ctype="Workspace" />
   <MonoDevelop.Ide.DebuggingService>
     <BreakpointStore>
-      <Breakpoint file="/Users/miguel/Projects/OpenFlowSharp/OpenFlowSharp/OpenFlowView.cs" line="127" />
       <Breakpoint file="/Users/miguel/Projects/OpenFlowSharp/OpenFlowSharp/OpenFlowView.cs" line="281" />
-      <Breakpoint file="/Users/miguel/Projects/OpenFlowSharp/OpenFlowSharp/OpenFlowView.cs" line="463" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService>
-  <MonoDevelop.Ide.Workbench ActiveDocument="OpenFlowSharp/OpenFlowView.cs" ctype="Workbench">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Sample/SampleViewController.xib.cs" ctype="Workbench">
     <Files>
-      <File FileName="../../../../Developer/MonoTouch/Source/mcs/class/corlib/System/Console.cs" Line="1" Column="1" />
-      <File FileName="../../../../Developer/MonoTouch/Source/mcs/class/corlib/System/Object.cs" Line="1" Column="1" />
-      <File FileName="../../../../Developer/MonoTouch/Source/mcs/class/corlib/System.Text/Encoding.cs" Line="1" Column="1" />
-      <File FileName="../../../../Developer/MonoTouch/usr/bin/smcs" Line="1" Column="1" />
-      <File FileName="../../../../cvs/iphone/monotouch/SystemConfiguration/NetworkReachability.cs" Line="1" Column="1" />
-      <File FileName="Sample/SampleViewController.xib.cs" Line="38" Column="31" />
-      <File FileName="OpenFlowSharp/OpenFlowView.cs" Line="38" Column="4" />
-      <File FileName="../../../../Developer/MonoTouch/Source/mcs/class/System/System.Collections.Generic/Stack.cs" Line="152" Column="1" />
-      <File FileName="OpenFlowSharp/ItemView.cs" Line="70" Column="6" />
+      <File FileName="Sample/SampleViewController.xib.cs" Line="68" Column="26" />
+      <File FileName="OpenFlowSharp/OpenFlowView.cs" Line="1" Column="1" />
+      <File FileName="../../../../Developer/MonoTouch/Source/mcs/class/System/System.Collections.Generic/Stack.cs" Line="1" Column="1" />
+      <File FileName="OpenFlowSharp/ItemView.cs" Line="1" Column="1" />
+      <File FileName="OpenFlowSharp/ImageUtils.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
           <Node name="OpenFlowSharp" expanded="True">
             <Node name="References" expanded="True" />
-            <Node name="OpenFlowView.cs" selected="True" />
           </Node>
           <Node name="Sample" expanded="True">
+            <Node name="References" expanded="True" selected="True" />
             <Node name="SampleViewController.xib" expanded="True" />
           </Node>
         </State>

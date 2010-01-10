@@ -29,19 +29,98 @@ using System.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using OpenFlowSharp;
+using System.Threading;
+using FlickrNet;
+using System.Drawing;
 
 namespace Sample
 {
 	public partial class SampleViewController : UIViewController, IOpenFlowDataSource
 	{
+		const string apiKey = "c0cf24ba43385203b331b578dcaa54eb";
+		const string sharedSecret = "670547d41098cd97";
+		Flickr flickr;
+		Photos photos;
+			
 		OpenFlowView flowView;
+		AutoResetEvent signal = new AutoResetEvent (false);
+		Queue<NSAction> tasks = new Queue<NSAction> ();
 		
 		#region IOpenFlowDataSource implementation
+		UIImage PrepareFlickrPhoto (UIImage image, SizeF cropSize)
+		{
+			// First rescale
+			var rect = new RectangleF (0, 0, cropSize.Width, cropSize.Height);
+			UIGraphics.BeginImageContext (rect.Size);
+			image.Draw (rect);
+			var scaledImage = UIGraphics.GetImageFromCurrentImageContext ();
+			UIGraphics.EndImageContext ();
+			
+			// Now crop
+			var cropRect = new RectangleF ((scaledImage.Size.Width-cropSize.Width)/2,
+			                               (scaledImage.Size.Height-cropSize.Height)/2,
+			                               cropSize.Width, cropSize.Height);
+
+			UIGraphics.BeginImageContext (cropRect.Size);
+			var ctx = UIGraphics.GetCurrentContext ();
+			
+			// Compensate for Quartz coordinates
+			ctx.TranslateCTM (0.0f, cropRect.Size.Height);
+			ctx.ScaleCTM (1, -1);
+			
+			// Draw view into context
+			ctx.DrawImage (new RectangleF (-cropRect.X, cropRect.Y - (image.Size.Height - cropRect.Size.Height), image.Size.Width, image.Size.Height), image.CGImage);
+			
+			// Create UIImage from context
+			var newImage = UIGraphics.GetImageFromCurrentImageContext ();
+			UIGraphics.EndImageContext ();
+			
+			return newImage;
+		}
+		
+		SizeF CalculateSizeForCroppingBox (UIImage image, int width, int height)
+		{
+			float newHeight, newWidth;
+			
+			if (image.Size.Width < image.Size.Height){
+				newWidth = width;
+				newHeight = width * (image.Size.Height / image.Size.Width);
+			} else {
+				newHeight = height;
+				newWidth = height * (image.Size.Width / image.Size.Height);
+			}
+			return new SizeF (newWidth, newHeight);
+		}
+		
 		void IOpenFlowDataSource.RequestImage (OpenFlowView view, int index)
 		{
-			// This is only used for providing data on demand, instead 
-			// of preloading all the data
-			throw new NotImplementedException ();
+			NSAction task;
+			
+			if (flickr == null){
+				task = delegate {
+					var img = UIImage.FromFile ("images/" + index + ".jpg");
+					InvokeOnMainThread (delegate {
+						flowView [index] = img;
+					});
+				};
+			} else {
+				task = delegate {
+					var data = NSData.FromUrl (new NSUrl (photos [index].SmallUrl));
+					var image = UIImage.LoadFromData (data);
+					
+					if (image != null){
+						InvokeOnMainThread (delegate {
+							image = PrepareFlickrPhoto (image, CalculateSizeForCroppingBox (image, 255, 255));
+						
+							flowView [index] = image;
+						});
+					}
+				};
+			}
+			lock (tasks){
+				tasks.Enqueue (task);
+			}
+			signal.Set ();
 		}
 		
 		
@@ -73,11 +152,6 @@ namespace Sample
 			flowView = new OpenFlowView (UIScreen.MainScreen.Bounds, this);
 			View.AddSubview (flowView);
 			
-			// I am lazy, do not want to implement the 2 other samples.
-			
-			LoadAllImages ();
-			return;
-			
 			using (var alertView = new UIAlertView ("OpenFlowSharp Demo Data Source",
 				"Would you like to download images from Flickr or use 30 sample images included with this project?",
 				null, "Flickr",
@@ -85,13 +159,33 @@ namespace Sample
 				"Samples (using threads)")){
 				alertView.Dismissed += delegate(object sender, UIButtonEventArgs e) {
 					switch (e.ButtonIndex){
+					// Flickr
 					case 0:
-						// TODO
+						flickr = new Flickr (apiKey, sharedSecret);
+						new Thread (delegate (object k) {
+							try {
+								photos = flickr.InterestingnessGetList ();
+								InvokeOnMainThread (delegate {
+									flowView.NumberOfImages = photos.Count;
+									new Thread (Worker).Start ();
+								});
+							} catch {
+								using (var alert = new UIAlertView ("Error", "While accessing Flickr", null, "Ok")){
+									alert.Show ();
+								}
+							}
+						}).Start ();
+						break;
+						
+					// Sync case, load all images at startup
 					case 1:
 						LoadAllImages ();
 						break;
+						
+					// Load images on demand on a worker thread
 					case 2:
 						flowView.NumberOfImages = 30;
+						new Thread (Worker).Start ();
 						break;
 					}
 				};
@@ -99,6 +193,25 @@ namespace Sample
 			}
 		}
 
+		//
+		// Dispatches the tasks queued in the tasks queue
+		// 
+		void Worker ()
+		{
+			while (signal.WaitOne ()){
+				while (true){
+					NSAction task;
+				
+					lock (tasks){
+						if (tasks.Count > 0)
+							task = tasks.Dequeue ();
+						else
+							break;
+					}
+					task ();
+				}
+			}
+		}
 		#endregion
 	}
 }

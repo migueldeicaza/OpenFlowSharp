@@ -206,8 +206,8 @@ namespace OpenFlowSharp
 			
 		void UpdateCoverImage (ItemView aCover)
 		{
-			var coverImage = coverImages [aCover.Number];
-			if (coverImage != null){
+			UIImage coverImage;
+			if (coverImages.TryGetValue (aCover.Number, out coverImage)){
 				if (coverImageHeights.ContainsKey (aCover.Number))
 					aCover.SetImage (coverImage, coverImageHeights [aCover.Number], kReflectionFraction);
 			} else {
