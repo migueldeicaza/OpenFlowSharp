@@ -42,7 +42,7 @@ namespace OpenFlowSharp
 			this.container = container;
 			
 			Opaque = true;
-			//BackgroundColor = null;
+			BackgroundColor = null;
 			
 			ImageView = new UIImageView (bounds) {
 				Opaque = true

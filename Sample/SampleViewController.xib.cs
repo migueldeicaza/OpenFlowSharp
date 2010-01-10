@@ -58,7 +58,7 @@ namespace Sample
 		
 		void Initialize ()
 		{
-			flowView = new OpenFlowView (this);
+			flowView = new OpenFlowView (UIScreen.MainScreen.Bounds, this);
 			View.AddSubview (flowView);
 			
 			using (var alertView = new UIAlertView ("OpenFlowSharp Demo Data Source",
@@ -72,8 +72,10 @@ namespace Sample
 						// TODO
 					case 1:
 						// Load images all at once
-						for (int i = 0; i < 30; i++)
-							flowView [i] = UIImage.FromFile ("images/" + i + ".jpg");
+						for (int i = 0; i < 30; i++){
+							var img = UIImage.FromFile ("images/" + i + ".jpg");
+							flowView [i] = img;
+						}
 						flowView.NumberOfImages = 30;
 						break;
 					case 2:

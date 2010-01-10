@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="ItemView.cs" />
     <Compile Include="OpenFlowView.cs" />
+    <Compile Include="ImageUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
