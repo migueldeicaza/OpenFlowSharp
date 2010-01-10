@@ -1,0 +1,113 @@
+diff -ruN flickr.orig/FlickrNet/Cache.cs flickr/FlickrNet/Cache.cs
+--- flickr.orig/FlickrNet/Cache.cs	2010-01-09 21:51:36.000000000 -0500
++++ flickr/FlickrNet/Cache.cs	2010-01-10 00:56:23.000000000 -0500
+@@ -72,7 +72,7 @@
+ 		{
+ 			get
+ 			{
+-#if !WindowsCE
++#if !(WindowsCE || MONOTOUCH)
+ 				if( _cacheDisabled == Tristate.Null && FlickrConfigurationManager.Settings != null )
+ 					_cacheDisabled = (FlickrConfigurationManager.Settings.CacheDisabled?Tristate.True:Tristate.False);
+ #endif
+@@ -93,7 +93,7 @@
+ 		{
+ 			get 
+ 			{ 
+-#if !WindowsCE
++#if !(MONOTOUCH || WindowsCE)
+ 				if( _cacheLocation == null && FlickrConfigurationManager.Settings != null )
+ 					_cacheLocation = FlickrConfigurationManager.Settings.CacheLocation;
+ #endif
+@@ -101,11 +101,15 @@
+ 				{
+ 					try
+ 					{
+-#if !WindowsCE
++#if !(MONOTOUCH || WindowsCE)
+ 						_cacheLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FlickrNet");
+ #else
++#if MONOTOUCH
++			_cacheLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "../Library/Caches");
++#else
+                         _cacheLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "FlickrNetCache");
+ #endif
++#endif
+ 					}
+ 					catch(System.Security.SecurityException)
+ 					{
+diff -ruN flickr.orig/FlickrNet/ConfigurationErrorsException.cs flickr/FlickrNet/ConfigurationErrorsException.cs
+--- flickr.orig/FlickrNet/ConfigurationErrorsException.cs	1969-12-31 19:00:00.000000000 -0500
++++ flickr/FlickrNet/ConfigurationErrorsException.cs	2010-01-10 01:02:14.000000000 -0500
+@@ -0,0 +1,10 @@
++namespace System.Configuration {
++
++	public class ConfigurationErrorsException : Exception {
++		public ConfigurationErrorsException (string msg) : base (msg)
++		{}
++
++		public ConfigurationErrorsException (string msg, object a) : base (msg) {}
++		public ConfigurationErrorsException (string msg, object a, object b) : base (msg) {}
++	}
++}
+diff -ruN flickr.orig/FlickrNet/Flickr.cs flickr/FlickrNet/Flickr.cs
+--- flickr.orig/FlickrNet/Flickr.cs	2010-01-09 21:51:38.000000000 -0500
++++ flickr/FlickrNet/Flickr.cs	2010-01-10 01:01:27.000000000 -0500
+@@ -211,7 +211,7 @@
+ 		{
+ 			get 
+ 			{
+-#if !WindowsCE
++#if !(MONOTOUCH || WindowsCE)
+ 				if( !_isServiceSet && FlickrConfigurationManager.Settings != null )
+ 				{
+ 					_defaultService = FlickrConfigurationManager.Settings.Service;
+@@ -223,7 +223,7 @@
+ 			set
+ 			{
+ 				_defaultService = value;
+-#if !WindowsCE
++#if !(MONOTOUCH || WindowsCE)
+ 				_isServiceSet = true;
+ #endif
+ 			}
+@@ -391,7 +391,7 @@
+ 		/// </summary>
+ 		public Flickr()
+ 		{
+-#if !WindowsCE
++#if !(MONOTOUCH || WindowsCE)
+ 			FlickrConfigurationSettings settings = FlickrConfigurationManager.Settings;
+ 			if( settings == null ) return;
+ 
+@@ -562,8 +562,9 @@
+ 				}
+ 				throw new FlickrWebException("Picture download failed (" + ex.Message + ")", ex);
+ 			}
+-
++#if !MONOTOUCH
+ 			System.Diagnostics.Debug.Write("Http Status Code = " + res.StatusCode);
++#endif
+ 			if( !redirect && res.StatusCode == HttpStatusCode.Redirect ) return null;
+ 
+ 			return res.GetResponseStream();
+diff -ruN flickr.orig/FlickrNet/FlickrConfigurationManager.cs flickr/FlickrNet/FlickrConfigurationManager.cs
+--- flickr.orig/FlickrNet/FlickrConfigurationManager.cs	2010-01-09 21:51:38.000000000 -0500
++++ flickr/FlickrNet/FlickrConfigurationManager.cs	2010-01-10 00:56:46.000000000 -0500
+@@ -2,7 +2,7 @@
+ using System.Configuration;
+ using System.Xml;
+ 
+-#if !WindowsCE
++#if !(MONOTOUCH || WindowsCE)
+ namespace FlickrNet
+ {
+ 	/// <summary>
+@@ -37,4 +37,4 @@
+ 		}
+ 	}
+ }
+-#endif
+\ No newline at end of file
++#endif
+Binary files flickr.orig/FlickrNet/flickrnet.dll and flickr/FlickrNet/flickrnet.dll differ
