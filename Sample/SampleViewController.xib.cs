@@ -56,10 +56,25 @@ namespace Sample
 			Initialize ();
 		}
 		
+		void LoadAllImages ()
+		{
+				// Load images all at once
+				for (int i = 0; i < 30; i++){
+					var img = UIImage.FromFile ("images/" + i + ".jpg");
+					flowView [i] = img;
+				}
+				flowView.NumberOfImages = 30;
+		}
+		
 		void Initialize ()
 		{
 			flowView = new OpenFlowView (UIScreen.MainScreen.Bounds, this);
 			View.AddSubview (flowView);
+			
+			// I am lazy, do not want to implement the 2 other samples.
+			
+			LoadAllImages ();
+			return;
 			
 			using (var alertView = new UIAlertView ("OpenFlowSharp Demo Data Source",
 				"Would you like to download images from Flickr or use 30 sample images included with this project?",
@@ -71,12 +86,7 @@ namespace Sample
 					case 0:
 						// TODO
 					case 1:
-						// Load images all at once
-						for (int i = 0; i < 30; i++){
-							var img = UIImage.FromFile ("images/" + i + ".jpg");
-							flowView [i] = img;
-						}
-						flowView.NumberOfImages = 30;
+						LoadAllImages ();
 						break;
 					case 2:
 						flowView.NumberOfImages = 30;
