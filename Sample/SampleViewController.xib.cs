@@ -23,6 +23,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 //
 
+// Define this setting to get rotation, Up to MonoTouch 1.4.3, there is a bug
+// in some of the code that we use that breaks the app (bounds override):
+//#define MONOTOUCH_FIXED
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -150,7 +154,11 @@ namespace Sample
 		void Initialize ()
 		{
 			flowView = new OpenFlowView (UIScreen.MainScreen.Bounds, this);
+#if MONOTOUCH_FIXED
 			View = flowView;
+#else
+			View.AddSubview (flowView);
+#endif
 			
 			using (var alertView = new UIAlertView ("OpenFlowSharp Demo Data Source",
 				"Would you like to download images from Flickr or use 30 sample images included with this project?",
@@ -193,11 +201,12 @@ namespace Sample
 			}
 		}
 
+#if MONOTOUCH_FIXED
 		public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
 		{
 			return true;
 		}
-
+#endif
 		//
 		// Dispatches the tasks queued in the tasks queue
 		// 
