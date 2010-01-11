@@ -150,7 +150,7 @@ namespace Sample
 		void Initialize ()
 		{
 			flowView = new OpenFlowView (UIScreen.MainScreen.Bounds, this);
-			View.AddSubview (flowView);
+			View = flowView;
 			
 			using (var alertView = new UIAlertView ("OpenFlowSharp Demo Data Source",
 				"Would you like to download images from Flickr or use 30 sample images included with this project?",
@@ -191,6 +191,11 @@ namespace Sample
 				};
 			    alertView.Show ();
 			}
+		}
+
+		public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
+		{
+			return true;
 		}
 
 		//

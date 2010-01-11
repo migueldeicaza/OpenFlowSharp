@@ -169,6 +169,7 @@ namespace OpenFlowSharp
 			MultipleTouchEnabled = false;
 			UserInteractionEnabled = true;
 			AutosizesSubviews = true;
+
 			Layer.Position = new System.Drawing.PointF ((float)(Frame.Size.Width / 2), (float)(Frame.Height / 2));
 			
 			// Initialize the visible and selected cover range.
