@@ -451,6 +451,9 @@ namespace OpenFlowSharp
 			
 		public override void TouchesBegan (MonoTouch.Foundation.NSSet touches, UIEvent evt)
  	 	{
+			if (selectedCoverView == null)
+				return;
+			
 			var startPoint = ((UITouch) touches.AnyObject).LocationInView (this);
 			isDraggingACover = false;
 			
@@ -471,6 +474,9 @@ namespace OpenFlowSharp
 
 		public override void TouchesMoved (MonoTouch.Foundation.NSSet touches, UIEvent evt)
 		{
+			if (selectedCoverView == null)
+				return;
+			
 			isSingleTap = false;
 			isDoubleTap = false;
 			
@@ -497,6 +503,9 @@ namespace OpenFlowSharp
 		
 		public override void TouchesEnded (MonoTouch.Foundation.NSSet touches, UIEvent evt)
 		{
+			if (selectedCoverView == null)
+				return;
+			
 			if (isSingleTap){
 				var targetPoint = ((UITouch)touches.AnyObject).LocationInView (this);
 				var targetLayer = scrollView.Layer.HitTest (targetPoint);

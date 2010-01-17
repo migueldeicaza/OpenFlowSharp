@@ -2,16 +2,15 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|iPhoneSimulator" ctype="Workspace" />
   <MonoDevelop.Ide.DebuggingService>
     <BreakpointStore>
-      <Breakpoint file="/Users/miguel/Projects/OpenFlowSharp/OpenFlowSharp/OpenFlowView.cs" line="281" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService>
   <MonoDevelop.Ide.Workbench ActiveDocument="Sample/SampleViewController.xib.cs" ctype="Workbench">
     <Files>
-      <File FileName="Sample/SampleViewController.xib.cs" Line="68" Column="26" />
-      <File FileName="OpenFlowSharp/OpenFlowView.cs" Line="1" Column="1" />
-      <File FileName="../../../../Developer/MonoTouch/Source/mcs/class/System/System.Collections.Generic/Stack.cs" Line="1" Column="1" />
+      <File FileName="Sample/SampleViewController.xib.cs" Line="224" Column="28" />
+      <File FileName="OpenFlowSharp/OpenFlowView.cs" Line="479" Column="4" />
       <File FileName="OpenFlowSharp/ItemView.cs" Line="1" Column="1" />
       <File FileName="OpenFlowSharp/ImageUtils.cs" Line="1" Column="1" />
+      <File FileName="Sample/Main.cs" Line="48" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -20,8 +19,10 @@
             <Node name="References" expanded="True" />
           </Node>
           <Node name="Sample" expanded="True">
-            <Node name="References" expanded="True" selected="True" />
-            <Node name="SampleViewController.xib" expanded="True" />
+            <Node name="References" expanded="True" />
+            <Node name="SampleViewController.xib" expanded="True">
+              <Node name="SampleViewController.xib.cs" selected="True" />
+            </Node>
           </Node>
         </State>
       </Pad>

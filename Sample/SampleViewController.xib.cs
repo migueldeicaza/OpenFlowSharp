@@ -92,6 +92,15 @@ namespace Sample
 			return new SizeF (newWidth, newHeight);
 		}
 		
+		static bool Network {
+			get {
+				return UIApplication.SharedApplication.NetworkActivityIndicatorVisible;
+			}
+			set {
+				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = value;
+			}
+		}
+		
 		void IOpenFlowDataSource.RequestImage (OpenFlowView view, int index)
 		{
 			NSAction task;
@@ -105,8 +114,10 @@ namespace Sample
 				};
 			} else {
 				task = delegate {
+					Network = true;
 					var data = NSData.FromUrl (new NSUrl (photos [index].SmallUrl));
 					var image = UIImage.LoadFromData (data);
+					Network = false;
 					
 					if (image != null){
 						InvokeOnMainThread (delegate {
@@ -161,12 +172,12 @@ namespace Sample
 					switch (e.ButtonIndex){
 					// Flickr
 					case 0:
-						flickr = new Flickr (apiKey, sharedSecret);
-						new Thread (Worker).Start ();
-						
+						flickr = new Flickr (apiKey, sharedSecret);						
 						tasks.Enqueue (delegate {
 							try {
+								Network = true;
 								photos = flickr.InterestingnessGetList ();
+								Network = false;
 								InvokeOnMainThread (delegate {
 									flowView.NumberOfImages = photos.Count;
 								});
@@ -178,20 +189,22 @@ namespace Sample
 								});
 							}
 						});
-						
+						break;
+
+						// Load images on demand on a worker thread
+					case 2:
+						flowView.NumberOfImages = 30;						
 						break;
 						
-					// Sync case, load all images at startup
+						// Sync case, load all images at startup
 					case 1:
 						LoadAllImages ();
-						break;
-						
-					// Load images on demand on a worker thread
-					case 2:
-						flowView.NumberOfImages = 30;
-						new Thread (Worker).Start ();
-						break;
+						return;
 					}
+					
+					// Start our thread queue system
+					new Thread (Worker).Start ();
+					signal.Set ();
 				};
 			    alertView.Show ();
 			}
@@ -206,17 +219,22 @@ namespace Sample
 		// 
 		void Worker ()
 		{
-			while (signal.WaitOne ()){
-				while (true){
-					NSAction task;
-				
-					lock (tasks){
-						if (tasks.Count > 0)
-							task = tasks.Dequeue ();
-						else
-							break;
+			// Create the NSAutoreleasePool so that any NSObjects that
+			// the ObjC runtime creates are disposed using it, otherwise
+			// ObjC just leaks them.
+			using (var releasePool = new NSAutoreleasePool ()){
+				while (signal.WaitOne ()){
+					while (true){
+						NSAction task;
+					
+						lock (tasks){
+							if (tasks.Count > 0)
+								task = tasks.Dequeue ();
+							else
+								break;
+						}
+						task ();
 					}
-					task ();
 				}
 			}
 		}
