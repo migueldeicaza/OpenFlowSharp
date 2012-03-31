@@ -78,7 +78,17 @@ namespace OpenFlowSharp
 			
 			var size = new SizeF (image.Size.Width, image.Size.Height + reflectionHeight);
 			
-			UIGraphics.BeginImageContext (size);
+			// Use BeginImageContextWithOptions for retina images (only available on is 4.0 and up).
+			// http://stackoverflow.com/questions/6965873/drawing-on-the-retina-display-using-coregraphics-image-pixelated
+			if (UIScreen.MainScreen.RespondsToSelector(new Selector("scale")))
+			{
+				UIGraphics.BeginImageContextWithOptions(size, false, UIScreen.MainScreen.Scale);
+			}
+			else
+			{
+				UIGraphics.BeginImageContext (size);
+			}
+			
 			image.Draw (PointF.Empty);
 			var context = UIGraphics.GetCurrentContext ();
 			context.DrawImage (new RectangleF (0, image.Size.Height, image.Size.Width, reflectionHeight), reflectionImage);
