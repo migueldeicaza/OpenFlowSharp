@@ -86,7 +86,7 @@ namespace OpenFlowSharp
 			set {
 				numberOfImages = value;
 				scrollView.ContentSize = new SizeF ((float)(value * coverSpacing + Bounds.Size.Width), Bounds.Size.Height);
-				if (selectedCoverView == null)
+				if (selectedCoverView == null && numberOfImages != 0 )
 					SetSelectedCover (0);
 				Layout ();
 			}
@@ -130,6 +130,8 @@ namespace OpenFlowSharp
 			
 			this.dataSource = dataSource;
 			SetupInitialState ();
+
+			this.BackgroundColor=UIColor.Clear;
 			
 #if AUTOMATIC_DEMO
 			Thread t = new Thread (delegate (object a) {
@@ -316,6 +318,7 @@ namespace OpenFlowSharp
 					UpdateCoverImage (cover);
 					scrollView.Layer.AddSublayer (cover.Layer);
 					LayoutCover (cover, newSelectedCover, false);
+					this.BringSubviewToFront(cover);
 				}
 				
 				lowerVisibleCover = newLowerBound;
@@ -435,16 +438,32 @@ namespace OpenFlowSharp
 				return coverImages [idx];
 			}
 			set {
-				var imageWithReflection = ImageUtils.AddImageReflection (value, kReflectionFraction);
-				coverImages [idx] = imageWithReflection;
-				coverImageHeights [idx] = value.Size.Height;
-				
-				// If the image is onscreen, set its image and call layoutCover
-				ItemView aCover;
-				
-				if (onscreenCovers.TryGetValue (idx, out aCover)){
-					aCover.SetImage (imageWithReflection, value.Size.Height, kReflectionFraction);
-					LayoutCover (aCover, selectedCoverView.Number, false);
+				if( value != null )
+				{
+					UIImage img;
+					if( coverImages.TryGetValue( idx-15, out img ))
+					{
+						img=null;
+						coverImages.Remove(idx-15);
+					}
+					if( coverImages.TryGetValue( idx+15, out  img ))
+					{
+						img=null;
+						coverImages.Remove(idx+15);
+					}
+					
+
+					var imageWithReflection = ImageUtils.AddImageReflection (value, kReflectionFraction);
+					coverImages [idx] = imageWithReflection;
+					coverImageHeights [idx] = value.Size.Height;
+					
+					// If the image is onscreen, set its image and call layoutCover
+					ItemView aCover;
+					
+					if (onscreenCovers.TryGetValue (idx, out aCover)){
+						aCover.SetImage (imageWithReflection, value.Size.Height, kReflectionFraction);
+						LayoutCover (aCover, selectedCoverView.Number, false);
+					}
 				}
 			}
 		}
@@ -500,6 +519,7 @@ namespace OpenFlowSharp
 		}
 		
 		public event EventHandler Changed;
+		public event EventHandler SingleTap;
 		
 		public override void TouchesEnded (MonoTouch.Foundation.NSSet touches, UIEvent evt)
 		{
@@ -513,6 +533,8 @@ namespace OpenFlowSharp
 				
 				if (targetCover != null && (targetCover.Number != selectedCoverView.Number))
 					SetSelectedCover (targetCover.Number);
+				if( this.SingleTap != null )
+					this.SingleTap(this,new EventArgs());
 			}
 			CenterOnSelectedCover (true);
 			

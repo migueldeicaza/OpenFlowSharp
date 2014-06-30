@@ -45,7 +45,7 @@ namespace Sample
 		OpenFlowView flowView;
 		AutoResetEvent signal = new AutoResetEvent (false);
 		Queue<NSAction> tasks = new Queue<NSAction> ();
-		
+
 		#region IOpenFlowDataSource implementation
 		UIImage PrepareFlickrPhoto (UIImage image, SizeF cropSize)
 		{
@@ -139,7 +139,6 @@ namespace Sample
 		{
 			return UIImage.FromFile ("default.png");
 		}
-		
 		#endregion
 		
 		#region Constructors
@@ -162,14 +161,21 @@ namespace Sample
 		{
 			flowView = new OpenFlowView (UIScreen.MainScreen.Bounds, this);
 			View = flowView;
-			
-			using (var alertView = new UIAlertView ("OpenFlowSharp Demo Data Source",
-				"Would you like to download images from Flickr or use 30 sample images included with this project?",
-				null, "Flickr",
-				"Samples (all at once)",
-				"Samples (using threads)")){
+		}
+
+		public  void ViewDidLoad ()
+		{
+			base.ViewDidLoad(  );
+
+			Console.WriteLine ("ViewDidLoad");
+
+			var alertView = new UIAlertView ("OpenFlowSharp Demo Data Source",
+				                "Would you like to download images from Flickr or use 30 sample images included with this project?",
+				                null, "Flickr",
+				                "Samples (all at once)",
+				                "Samples (using threads)");
 				alertView.Dismissed += delegate(object sender, UIButtonEventArgs e) {
-					switch (e.ButtonIndex){
+					switch (e.ButtonIndex) {
 					// Flickr
 					case 0:
 						flickr = new Flickr (apiKey, sharedSecret);						
@@ -191,23 +197,23 @@ namespace Sample
 						});
 						break;
 
-						// Load images on demand on a worker thread
+					// Load images on demand on a worker thread
 					case 2:
 						flowView.NumberOfImages = 30;						
 						break;
 						
-						// Sync case, load all images at startup
+					// Sync case, load all images at startup
 					case 1:
 						LoadAllImages ();
 						return;
 					}
-					
-					// Start our thread queue system
-					new Thread (Worker).Start ();
-					signal.Set ();
+
 				};
-			    alertView.Show ();
-			}
+				alertView.Show ();
+
+			// Start our thread queue system
+			new Thread (Worker).Start ();
+			signal.Set ();
 		}
 
 		public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
@@ -222,21 +228,22 @@ namespace Sample
 			// Create the NSAutoreleasePool so that any NSObjects that
 			// the ObjC runtime creates are disposed using it, otherwise
 			// ObjC just leaks them.
-			using (var releasePool = new NSAutoreleasePool ()){
 				while (signal.WaitOne ()){
 					while (true){
 						NSAction task;
-					
+
 						lock (tasks){
 							if (tasks.Count > 0)
 								task = tasks.Dequeue ();
 							else
 								break;
 						}
+						using (var releasePool = new NSAutoreleasePool ()){
 						task ();
+						}
+						task=null;
 					}
 				}
-			}
 		}
 		#endregion
 	}
