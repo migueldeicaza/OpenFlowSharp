@@ -6,9 +6,10 @@
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BBBC1BB1-9A6B-452F-9894-0D4FD75D7921}</ProjectGuid>
-    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <RootNamespace>Sample</RootNamespace>
+    <MainNibFile>MainWindow.xib</MainNibFile>
     <AssemblyName>Sample</AssemblyName>
     <MtouchSdkVersion>3.0</MtouchSdkVersion>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
@@ -78,8 +79,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <InterfaceDefinition Include="MainWindow.xib" xmlns="" />
-    <InterfaceDefinition Include="SampleViewController.xib" xmlns="" />
+    <Page Include="MainWindow.xib" />
+    <Page Include="SampleViewController.xib" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenFlowSharp\OpenFlowSharp.csproj">
@@ -126,7 +127,4 @@
       <Properties InternalTargetFrameworkVersion="IPhone" />
     </MonoDevelop>
   </ProjectExtensions>
-  <ItemGroup>
-    <None Include="Info.plist" />
-  </ItemGroup>
 </Project>

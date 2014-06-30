@@ -49,10 +49,11 @@ namespace Sample
 		public override bool FinishedLaunching (UIApplication app, NSDictionary options)
 		{
 			sample = new SampleViewController ();
-			
-			window.AddSubview (sample.View);
+
+			this.window.RootViewController = sample;
 			window.MakeKeyAndVisible ();
-			
+			//ViewDidLoad was not fired at start
+			sample.ViewDidLoad ();
 			return true;
 		}
 
